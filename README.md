@@ -96,6 +96,6 @@ Los resultados se analizaron con Python (pandas, matplotlib) desde `results.ipyn
 - La versión **P2**, aunque estable, presentó una mejora limitada (**≈3×**), debido al overhead al dividir el espacio en bloques.
 - El rendimiento aumentó significativamente hasta cierto punto (**≈11 hilos**), estabilizándose después por saturación de los núcleos virtuales.
 
-### 📊 Conclusión:
+### Conclusión:
 
 La paralelización global (P1) aprovechó mejor los recursos del chip M3 Pro, mostrando mejor escalabilidad y eficiencia frente a la versión segmentada (P2).
