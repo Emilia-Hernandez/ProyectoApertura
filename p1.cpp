@@ -262,7 +262,7 @@ vector<vector<double>> p2(double epsilon, int minPts, int n,  const vector<vecto
         blocks[block_id].push_back(i);
     }   
     
-    
+    #pragma omp parallel for shared(M,label,epsilon) private(j, dist,pts)
     for (int i = 0; i < n; i++) //recorremos bloques 
     {
         for (int k = 0; k < blocks[i].size(); k++)
@@ -284,7 +284,7 @@ vector<vector<double>> p2(double epsilon, int minPts, int n,  const vector<vecto
         
     }
 
-    //Identificar los epsilon alcanzables de los puntos core
+    //Identificar los epsilon alcanzables de los puntos core, parche
     #pragma omp parallel for shared(M,label,epsilon) private(j, dist,reach, pts)
     for (int i = 0; i < (int)M.size(); i++)
     { 
