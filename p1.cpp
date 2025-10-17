@@ -229,6 +229,7 @@ vector<vector<double>> p1(double epsilon, int minPts, const vector<vector<double
 
     return outliers;
 }
+
 vector<vector<double>> p2(double epsilon, int minPts, int n,  const vector<vector<double>>& M)
 {
     //segunda versión paralela en la que didide el espacio en n partes
@@ -261,8 +262,8 @@ vector<vector<double>> p2(double epsilon, int minPts, int n,  const vector<vecto
         blocks[block_id].push_back(i);
     }   
     
-    #pragma omp parallel for shared(M,label,epsilon,minPts) private(j, pts,dist)
-    for (int i = 0; i < n; i++) //recorremos bloques y eso es lo que hacemos para
+    
+    for (int i = 0; i < n; i++) //recorremos bloques 
     {
         for (int k = 0; k < blocks[i].size(); k++)
         {
@@ -284,7 +285,7 @@ vector<vector<double>> p2(double epsilon, int minPts, int n,  const vector<vecto
     }
 
     //Identificar los epsilon alcanzables de los puntos core
-    #pragma omp parallel for shared(M,label,epsilon) private(j, dist,reach)
+    #pragma omp parallel for shared(M,label,epsilon) private(j, dist,reach, pts)
     for (int i = 0; i < (int)M.size(); i++)
     { 
         if (label[i] == -1) // revisamos solo los no-core
@@ -292,7 +293,8 @@ vector<vector<double>> p2(double epsilon, int minPts, int n,  const vector<vecto
             reach = false;
             // buscar al menos un vecino que ya sea core
             j = 0; 
-            while(reach == false && j<M.size())
+            pts =0; 
+            while(reach == false && j<M.size() && pts<minPts)
             {
                 if (label[j] == 1) // comparar solo contra cores
                 {
@@ -300,9 +302,14 @@ vector<vector<double>> p2(double epsilon, int minPts, int n,  const vector<vecto
                     if (dist <= epsilon)
                         reach = true;
                 }
+                else{
+                    dist = sqrt(pow(M[i][0] - M[j][0], 2) + pow(M[i][1] - M[j][1], 2));
+                    if (dist <= epsilon)
+                        pts++;
+                }
                 j++;
             }
-            if (reach)
+            if (reach || pts>=minPts)
                 label[i] = 1; // alcanzable por core => lo tratamos como core/borde
 
         }
